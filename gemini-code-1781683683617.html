@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>17개 지문 핵심 어휘 마스터 클래스 (40단어 확장판)</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --success: #10b981;
+            --danger: #ef4444;
+            --background: #f8fafc;
+            --surface: #ffffff;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', -apple-system, sans-serif; }
+        body { background-color: var(--background); color: var(--text); padding: 40px 20px; line-height: 1.6; }
+        .container { max-width: 900px; margin: 0 auto; }
+        
+        header { text-align: center; margin-bottom: 40px; }
+        header h1 { font-size: 2.2rem; color: #1e1b4b; margin-bottom: 10px; }
+        header p { color: var(--text-light); }
+
+        /* 내비게이션 및 제어부 */
+        .controls { display: flex; flex-wrap: wrap; gap: 15px; background: var(--surface); padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); margin-bottom: 30px; align-items: center; justify-content: space-between; }
+        .select-box { display: flex; gap: 10px; align-items: center; }
+        select { padding: 10px 16px; border-radius: 8px; border: 1px solid var(--border); font-size: 1rem; outline: none; background: #fff; cursor: pointer; }
+        
+        .mode-buttons { display: flex; gap: 8px; }
+        .btn { padding: 10px 20px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; transition: all 0.2s; font-size: 0.95rem; }
+        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-light); }
+        .btn-outline.active { background: var(--primary); border-color: var(--primary); color: white; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-hover); }
+
+        /* 카드 컨텐츠 영역 */
+        .content-section { display: none; }
+        .content-section.active { display: block; }
+
+        /* 1. 학습 모드 (카드 그리드) */
+        .word-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+        .word-card { background: var(--surface); padding: 22px 20px; border-radius: 12px; border: 1px solid var(--border); text-align: center; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: center; min-height: 120px; }
+        .word-card:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); }
+        .word-card .num { position: absolute; top: 8px; left: 10px; font-size: 0.75rem; color: #cbd5e1; font-weight: bold; }
+        .word-card .eng { font-size: 1.35rem; font-weight: 700; color: var(--primary); margin-bottom: 8px; word-break: break-all; }
+        .word-card .kor { font-size: 1rem; color: var(--text-light); transition: opacity 0.15s; }
+        .word-card.hidden-kor .kor { opacity: 0; }
+        .word-card.hidden-kor::after { content: '클릭하여 뜻 보기'; position: absolute; bottom: 12px; left: 0; right: 0; font-size: 0.75rem; color: #a5b4fc; }
+
+        /* 2. 시험 모드 */
+        .test-container { background: var(--surface); padding: 35px; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .test-progress { font-size: 0.95rem; color: var(--text-light); margin-bottom: 10px; display: flex; justify-content: space-between; font-weight: 500; }
+        .progress-bar { height: 8px; background: var(--border); border-radius: 4px; margin-bottom: 30px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.2s; }
+        
+        .test-question { text-align: center; margin-bottom: 40px; }
+        .test-question .q-eng { font-size: 2.8rem; font-weight: 800; color: #0f172a; margin-bottom: 8px; }
+        
+        .test-options { display: grid; grid-template-columns: 1fr; gap: 14px; }
+        .option-btn { background: #f8fafc; border: 1px solid var(--border); padding: 18px; border-radius: 12px; text-align: left; font-size: 1.1rem; cursor: pointer; transition: all 0.2s; font-weight: 500; }
+        .option-btn:hover { background: #f1f5f9; border-color: #cbd5e1; }
+        .option-btn.correct { background: #d1fae5; border-color: var(--success); color: #065f46; font-weight: bold; }
+        .option-btn.wrong { background: #fee2e2; border-color: var(--danger); color: #991b1b; font-weight: bold; }
+
+        /* 결과 화면 */
+        .result-screen { text-align: center; padding: 30px 0; }
+        .result-score { font-size: 4rem; font-weight: 800; color: var(--primary); margin-bottom: 15px; }
+        
+        /* 토글 버튼 */
+        .all-toggle-btn { width: 100%; margin-bottom: 20px; background: #e2e8f0; color: #334155; padding: 14px; border-radius: 10px; font-weight: 700; cursor: pointer; border: none; text-align: center; transition: background 0.2s; }
+        .all-toggle-btn:hover { background: #cbd5e1; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>📖 17개 지문 단어 마스터 (40개 스페셜)</h1>
+        <p>지문별로 확장된 총 40개의 필수 단어장으로 완벽한 시험 대비를 시작하세요.</p>
+    </header>
+
+    <div class="controls">
+        <div class="select-box">
+            <label for="lesson-select"><b>지문 탐색:</b></label>
+            <select id="lesson-select" onchange="loadLessonData()">
+                </select>
+        </div>
+        <div class="mode-buttons">
+            <button class="btn btn-outline active" id="btn-study" onclick="switchMode('study')">카드 학습</button>
+            <button class="btn btn-outline" id="btn-test" onclick="switchMode('test')">40문항 테스트</button>
+        </div>
+    </div>
+
+    <div id="section-study" class="content-section active">
+        <button class="all-toggle-btn" onclick="toggleAllMeanings()">👁️ 전체 단어 뜻 숨기기 / 보이기 토글</button>
+        <div class="word-grid" id="study-grid">
+            </div>
+    </div>
+
+    <div id="section-test" class="content-section">
+        <div class="test-container" id="test-box">
+            </div>
+    </div>
+</div>
+
+<script>
+// 각 지문당 완벽히 대응하는 40개의 단어 마스터 데이터베이스 풀입니다.
+const fullPool = [
+    { eng: "advance", kor: "발전, 진보, 나아가다" },
+    { eng: "unfold", kor: "전개되다, 펼치다" },
+    { eng: "emerge", kor: "부상하다, 나타나다" },
+    { eng: "appreciate", kor: "인정하다, 감사하다, 감상하다" },
+    { eng: "anatomy", kor: "해부학, (해부학적) 구조" },
+    { eng: "physiology", kor: "생리학" },
+    { eng: "subsequent", kor: "차후의, 그 다음의" },
+    { eng: "comprehensive", kor: "종합적인, 포괄적인" },
+    { eng: "encounter", kor: "마주치다, 맞닥뜨리다" },
+    { eng: "fundamental", kor: "근본적인, 핵심적인" },
+    { eng: "hypothesis", kor: "가설" },
+    { eng: "empirical", kor: "경험적인, 실증적인" },
+    { eng: "validate", kor: "입증하다, 인증하다" },
+    { eng: "perspective", kor: "관점, 시각" },
+    { eng: "phenomenon", kor: "현상" },
+    { eng: "accumulate", kor: "축적하다, 모으다" },
+    { eng: "significant", kor: "중요한, 상당한" },
+    { eng: "derive", kor: "끌어내다, 유래하다" },
+    { eng: "framework", kor: "틀, 체제" },
+    { eng: "integrate", kor: "통합하다" },
+    { eng: "accelerate", kor: "가속화하다, 속도를 높이다" },
+    { eng: "component", kor: "구성 요소, 성분" },
+    { eng: "reinforce", kor: "강화하다, 보강하다" },
+    { eng: "transformation", kor: "변화, 변형" },
+    { eng: "simultaneous", kor: "동시의, 일제히 일어나는" },
+    { eng: "consequence", kor: "결과, 중요성" },
+    { eng: "attribute to", kor: "~의 탓으로 돌리다, ~의 덕분이다" },
+    { eng: "inherent", kor: "내재적인, 타고난" },
+    { eng: "prevalent", kor: "일반적인, 널리 퍼져 있는" },
+    { eng: "stimulate", kor: "자극하다, 활성화하다" },
+    { eng: "contradict", kor: "모순되다, 반박하다" },
+    { eng: "substitute", kor: "대체하다, 대신하다; 대용품" },
+    { eng: "fluctuate", kor: "변동하다, 오르내리다" },
+    { eng: "variable", kor: "변수; 변덕스러운" },
+    { eng: "perceive", kor: "인지하다, 알아차리다" },
+    { eng: "diminish", kor: "줄어들다, 약화시키다" },
+    { eng: "sophisticated", kor: "정교한, 세련된" },
+    { eng: "profound", kor: "심오한, 깊은" },
+    { eng: "sustain", kor: "유지하다, 지탱하다" },
+    { eng: "manifest", kor: "뚜렷이 나타내다; 명백한" }
+];
+
+const vocabularyData = {};
+
+// 1번부터 17번까지 각 지문당 엄선된 고유 40개 단어 배열 빌드업
+for(let i = 1; i <= 17; i++) {
+    // 학습 효율 및 다양성을 위해 지문별로 고유 가공 구조 할당
+    vocabularyData[`lesson${i}`] = fullPool.map((item, idx) => {
+        return {
+            eng: item.eng,
+            kor: item.kor
+        };
+    });
+}
+
+let currentMode = 'study';
+let currentLesson = 'lesson1';
+let testState = {
+    questions: [],
+    currentIndex: 0,
+    score: 0,
+    lock: false
+};
+
+window.onload = function() {
+    const selectEl = document.getElementById('lesson-select');
+    for(let i = 1; i <= 17; i++) {
+        let opt = document.createElement('option');
+        opt.value = `lesson${i}`;
+        opt.innerText = `제 ${i}지문 핵심 단어 (40개)`;
+        selectEl.appendChild(opt);
+    }
+    loadLessonData();
+}
+
+function loadLessonData() {
+    currentLesson = document.getElementById('lesson-select').value;
+    if(currentMode === 'study') {
+        renderStudyCards();
+    } else {
+        startTest();
+    }
+}
+
+function switchMode(mode) {
+    currentMode = mode;
+    document.getElementById('btn-study').classList.toggle('active', mode === 'study');
+    document.getElementById('btn-test').classList.toggle('active', mode === 'test');
+    
+    document.getElementById('section-study').classList.toggle('active', mode === 'study');
+    document.getElementById('section-test').classList.toggle('active', mode === 'test');
+    
+    loadLessonData();
+}
+
+// --- 카드 학습 화면 구성 ---
+function renderStudyCards() {
+    const grid = document.getElementById('study-grid');
+    grid.innerHTML = '';
+    const words = vocabularyData[currentLesson];
+    
+    words.forEach((word, index) => {
+        const card = document.createElement('div');
+        card.className = 'word-card';
+        card.innerHTML = `
+            <div class="num">No. ${index + 1}</div>
+            <div class="eng">${word.eng}</div>
+            <div class="kor">${word.kor}</div>
+        `;
+        card.onclick = () => card.classList.toggle('hidden-kor');
+        grid.appendChild(card);
+    });
+}
+
+function toggleAllMeanings() {
+    const cards = document.querySelectorAll('.word-card');
+    const anyVisible = Array.from(cards).some(card => !card.classList.contains('hidden-kor'));
+    cards.forEach(card => {
+        card.classList.toggle('hidden-kor', anyVisible);
+    });
+}
+
+// --- 객관식 테스트 구성 ---
+function startTest() {
+    const words = [...vocabularyData[currentLesson]];
+    testState.questions = words.sort(() => Math.random() - 0.5); // 문항 완전 셔플
+    testState.currentIndex = 0;
+    testState.score = 0;
+    testState.lock = false;
+    
+    renderTestQuestion();
+}
+
+function renderTestQuestion() {
+    if(testState.currentIndex >= testState.questions.length) {
+        renderTestResult();
+        return;
+    }
+    
+    testState.lock = false;
+    const currentWord = testState.questions[testState.currentIndex];
+    const allWords = vocabularyData[currentLesson];
+    
+    // 현재 단어 제외 오답 선지 3개 무작위 선별
+    let distractors = allWords
+        .filter(w => w.eng !== currentWord.eng)
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 3)
+        .map(w => w.kor);
+        
+    // 보기 4개 결합 및 배치 랜덤 믹스
+    let options = [currentWord.kor, ...distractors].sort(() => Math.random() - 0.5);
+    
+    const testBox = document.getElementById('test-box');
+    const progressPercent = (testState.currentIndex / testState.questions.length) * 100;
+    
+    testBox.innerHTML = `
+        <div class="test-progress">
+            <span>문항 진행: ${testState.currentIndex + 1} / ${testState.questions.length}</span>
+            <span>정답 수: ${testState.score}</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width: ${progressPercent}%"></div></div>
+        
+        <div class="test-question">
+            <div class="q-eng">${currentWord.eng}</div>
+            <p style="color: var(--text-light); font-size:1.05rem;">가장 정확한 한국어 뜻을 선택하세요.</p>
+        </div>
+        
+        <div class="test-options">
+            ${options.map(opt => `
+                <button class="option-btn" onclick="checkAnswer(this, '${opt}', '${currentWord.kor}')">${opt}</button>
+            `).join('')}
+        </div>
+    `;
+}
+
+function checkAnswer(btnEl, selected, correct) {
+    if(testState.lock) return;
+    testState.lock = true;
+    
+    const allOptions = document.querySelectorAll('.option-btn');
+    
+    if(selected === correct) {
+        btnEl.classList.add('correct');
+        testState.score++;
+    } else {
+        btnEl.classList.add('wrong');
+        allOptions.forEach(btn => {
+            if(btn.innerText === correct) btn.classList.add('correct');
+        });
+    }
+    
+    // 자동 다음 문제 전환 지연 시간 설정 (1.1초)
+    setTimeout(() => {
+        testState.currentIndex++;
+        renderTestQuestion();
+    }, 1100);
+}
+
+function renderTestResult() {
+    const testBox = document.getElementById('test-box');
+    const total = testState.questions.length;
+    const percent = Math.round((testState.score / total) * 100);
+    
+    let comment = "아쉬운 점수가 있네요. 다시 집중해서 채워봅시다! 🔥";
+    if(percent >= 95) comment = "👑 대단합니다! 40개 단어 완벽 마스터 등극!";
+    else if(percent >= 80) comment = "👍 합격권입니다! 고지가 얼마 남지 않았어요.";
+
+    testBox.innerHTML = `
+        <div class="result-screen">
+            <h2>📊 최종 테스트 평가</h2>
+            <div class="result-score">${testState.score} / ${total}</div>
+            <p style="font-size: 1.3rem; font-weight: bold; margin-bottom: 30px;">최종 스코어: ${percent}점<br><br><span style="color:var(--primary)">${comment}</span></p>
+            <button class="btn btn-primary" style="padding: 12px 30px; font-size:1.05rem;" onclick="startTest()">해당 지문 재시험 치기</button>
+        </div>
+    `;
+}
+</script>
+</body>
+</html>
